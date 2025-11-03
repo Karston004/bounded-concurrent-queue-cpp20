@@ -1,0 +1,10 @@
+# Build and binary files
+*.o
+*.obj
+*.exe
+
+#logs
+log.txt
+
+# IDE-specific files
+.vscode/
