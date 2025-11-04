@@ -4,11 +4,14 @@
 // Optional logging; Blocking & nonBlocking API
 // Build: g++ -std=c++20 -pthread -O2 main.cpp -o concurrent_queue
 // Enable logging: add -DENABLE_LOGGING (logs to log.txt file)
+// =============================
+
 
 // standard utilities & containers
 #include <cstdlib> 
 #include <vector>
 #include <string>
+#include <climits>
 
 // concurrency primitives
 #include <mutex> 
@@ -19,6 +22,8 @@
 // I/O and logging
 #include <iostream> 
 #include <fstream>
+
+
 
 // =============================
 // Toggleable Thread-safe logger
@@ -61,4 +66,48 @@ namespace logging {
 #define LOG(MSG)          ((void)0)
 #define LOG_SHUTDOWN()    ((void)0)
 #endif
+
+// ======================================
+// Bounded multi-producer/multi-consumer queue
+// ======================================
+
+template <typename T>
+class BoundedQueue {
+private: 
+    struct Node {
+        T value;
+        Node* next;
+    };
+
+
+    Node* head = nullptr;
+    Node* tail = nullptr;
+    std::counting_semaphore<INT_MAX> addable_;
+    std::counting_semaphore<INT_MAX> removable_;
+    std::mutex headLock_;
+    std::mutex tailLock_;
+
+public:
+    BoundedQueue(int capacity) {
+    }
+
+    void enqueue (){}
+    T dequeue () {
+        return NULL;
+    }
+    T peek () {
+        return NULL;
+    }
+    bool try_dequeue (T& result) {
+        return false;
+    }
+    bool try_enqueue () {
+        return  false;
+    }
+    bool try_peek () {
+        return false;
+    }
+
+
+};
 
