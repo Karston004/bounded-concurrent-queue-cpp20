@@ -88,13 +88,43 @@ private:
     std::mutex tailLock_;
 
 public:
-    BoundedQueue(int capacity) {
+    BoundedQueue(int capacity) : addable_(capacity), removable_(0) {
+        head = nullptr;
+        tail = nullptr;
     }
 
-    void enqueue (){}
-    T dequeue () {
-        return NULL;
+    void enqueue (T value){
+        Node* newNode = new Node();
+        newNode->value = value;
+        newNode->next = nullptr;
+        addable_.acquire();
+        {
+            std::scoped_lock lock(tailLock_);
+            if (tail==nullptr) head = newNode;
+            else tail->next = newNode;
+            tail = newNode;
+            LOG("Enqueue");
+        }
+        removable_.release();
     }
+
+    T dequeue () {
+        removable_.acquire();
+        T returnValue; 
+        {
+            returnValue = head->value;
+            std::scoped_lock lock(headLock_);
+            Node* temp = head;
+            if (head->next == nullptr) {
+                std::scoped_lock lock(tailLock_);
+                tail = nullptr;
+            }
+            head = head->next;
+            delete temp;
+        }
+        return returnValue;
+    }
+    
     T peek () {
         return NULL;
     }
