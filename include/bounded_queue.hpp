@@ -1,10 +1,12 @@
-// main.cpp
+// bounded_queue.hpp
 // C++20 required
 // Bounded concurrent queue. 
 // Optional logging; Blocking & nonBlocking API
-// Build: g++ -std=c++20 -pthread -O2 main.cpp -o concurrent_queue
-// Enable logging: add -DENABLE_LOGGING (logs to log.txt file)
+// Enable logging: add -DENABLE_LOGGING at compile time for thread-safe logging
+// Header-only library component.
+// Intended to be included by client code; see src/main.cpp for a usage demonstration.
 // =============================
+#pragma once
 
 
 // standard utilities & containers

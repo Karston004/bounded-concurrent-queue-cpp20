@@ -1,3 +1,10 @@
+// main.cpp
+// Demonstration program for BoundedQueue<T>
+// This file illustrates correct usage under concurrent producer/consumer workloads.
+// It is not part of the queue library itself.
+// Compile with -DENABLE_LOGGING to enable file-based logging (log.txt).
+// =============================
+
 #include "../include/bounded_queue.hpp"
 #include <thread>
 #include <iostream>
