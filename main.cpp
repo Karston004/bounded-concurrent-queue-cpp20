@@ -120,22 +120,23 @@ public:
 
     T dequeue () {
         removable_.acquire();
-        T returnValue; 
+        T returnValue{}; 
+        Node* temp = nullptr;
         {
             std::scoped_lock lock(headLock_, tailLock_);
             returnValue = head->value;
-            Node* temp = head;
+            temp = head;
             if (head->next == nullptr) tail = nullptr;
             head = head->next;
             LOG("Dequeue");
-            delete temp;
         }
+        delete temp;
         addable_.release();
         return returnValue;
     }
 
     T peek () {
-        T returnValue;
+        T returnValue{};
         removable_.acquire();
         {
             std::scoped_lock lock (headLock_);
@@ -151,16 +152,19 @@ public:
 
         if (!removable_.try_acquire()) LOG ("TryDequeue-Fail");
         else {
-            std::scoped_lock lock(headLock_, tailLock_);
-            result = head->value;
-            Node* temp = head;
-            if (head->next == nullptr) tail = nullptr;
-            head = head->next;
-            delete temp;
-
-            success = true;
-            LOG("TryDequeue-Success");
+            Node*temp = nullptr;
+            {
+                std::scoped_lock lock(headLock_, tailLock_);
+                result = head->value;
+                temp = head;
+                if (head->next == nullptr) tail = nullptr;
+                head = head->next;
+                
+                success = true;
+                LOG("TryDequeue-Success");
+            }
             addable_.release();
+            delete temp;
         } 
         return success;
     }
