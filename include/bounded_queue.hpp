@@ -12,6 +12,7 @@
 // standard utilities & containers
 #include <string>
 #include <climits>
+#include <stdexcept>
 
 // concurrency primitives
 #include <mutex> 
@@ -22,13 +23,13 @@
 #include <fstream>
 
 
-
+namespace bcq {
 // =============================
 // Toggleable Thread-safe logger
 // preprocessor
 // =============================
 #ifdef ENABLE_LOGGING
-namespace logging {
+namespace bcq::logging {
     inline std::mutex g_logMutex;
     inline std::ofstream g_out;
     
@@ -55,9 +56,9 @@ namespace logging {
     }
 }
 
-#define LOG_INIT(path)    logging::init(path)
-#define LOG(MSG)          logging::log(MSG)
-#define LOG_SHUTDOWN()    logging::shutdown()
+#define LOG_INIT(path)    ::bcq::logging::init(path)
+#define LOG(MSG)          ::bcq::logging::log(MSG)
+#define LOG_SHUTDOWN()    ::bcq::logging::shutdown()
 
 #else
 #define LOG_INIT(path)    ((void)0)
@@ -200,7 +201,5 @@ public:
         }
         return success;
     }
-
-
 };
-
+} //namespace bcq

@@ -12,7 +12,7 @@
 int main() {
     LOG_INIT("log.txt");
 
-    BoundedQueue<int> q(5);
+    bcq::BoundedQueue<int> q(5);
     int r;
 
     std::thread producer([&] {
@@ -36,7 +36,7 @@ int main() {
 
     std::cout << "Try Dequeue (Expected: false(0)) | " << q.try_dequeue(r) << "\n";
 
-    BoundedQueue<int> q2(2);
+    bcq::BoundedQueue<int> q2(2);
     std::cout << "Expected: true  (1) | " << q2.try_enqueue(1) << "\n";
     std::cout << "Expected: true  (1) | " << q2.try_enqueue(2) << "\n";
     std::cout << "Expected: false (0) | " << q2.try_enqueue(3) << "\n"; //full
