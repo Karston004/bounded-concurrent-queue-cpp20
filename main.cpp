@@ -82,8 +82,8 @@ private:
 
     Node* head = nullptr;
     Node* tail = nullptr;
-    std::counting_semaphore<INT_MAX> addable_;
-    std::counting_semaphore<INT_MAX> removable_;
+    std::counting_semaphore<> addable_;
+    std::counting_semaphore<> removable_;
     std::mutex headLock_;
     std::mutex tailLock_;
 
@@ -112,17 +112,15 @@ public:
         removable_.acquire();
         T returnValue; 
         {
+            std::scoped_lock lock(headLock_, tailLock_);
             returnValue = head->value;
-            std::scoped_lock lock(headLock_);
             Node* temp = head;
-            if (head->next == nullptr) {
-                std::scoped_lock lock(tailLock_);
-                tail = nullptr;
-            }
+            if (head->next == nullptr) tail = nullptr;
             head = head->next;
             delete temp;
             LOG("Dequeue");
         }
+        addable_.release();
         return returnValue;
     }
 
@@ -137,15 +135,58 @@ public:
         removable_.release();
         return returnValue;
     }
-    
+
     bool try_dequeue (T& result) {
-        return false;
+        bool success = false;
+
+        if (!removable_.try_acquire()) LOG ("TryDequeue-Fail");
+        else {
+            std::scoped_lock lock(headLock_, tailLock_);
+            result = head->value;
+            Node* temp = head;
+            if (head->next == nullptr) tail = nullptr;
+            head = head->next;
+            delete temp;
+
+            success = true;
+            LOG("TryDequeue-Success");
+            addable_.release();
+        } 
+        return success;
     }
-    bool try_enqueue () {
-        return  false;
+
+    bool try_enqueue (T value) {
+        bool success = false;
+        if (!addable_.try_acquire()) LOG ("TryEnqueue-Fail");
+        else {
+            Node* newNode = new Node();
+            newNode->value = value;
+            newNode->next = nullptr;
+
+            std::scoped_lock lock(tailLock_);
+            if (tail==nullptr) head = newNode;
+            else tail->next = newNode;
+            tail = newNode;            
+
+            success = true;
+            LOG ("TryEnqueue-Success");
+            removable_.release();
+        }
+        return  success;
     }
-    bool try_peek () {
-        return false;
+
+    bool try_peek (T& result) {
+        bool success = false;
+        if (!removable_.try_acquire()) LOG ("TryPeek-Fail");
+        else {
+            std::scoped_lock lock(headLock_);
+            result = head->value;
+
+            success = true;
+            LOG ("TryPeek-Success");
+            removable_.release();
+        }
+        return success;
     }
 
 
