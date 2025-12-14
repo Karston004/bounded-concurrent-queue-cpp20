@@ -27,7 +27,7 @@ int main() {
     else std::cout << "Peek failed (queue empty)\n";
     consumer.join();
 
-    std::cout << "Try Dequeue (Expected: false(0)) | " << std::to_string( q.try_dequeue(r)) << "\n";
+    std::cout << "Try Dequeue (Expected: false(0)) | " << q.try_dequeue(r) << "\n";
 
     BoundedQueue<int> q2(2);
     std::cout << "Expected: true  (1) | " << q2.try_enqueue(1) << "\n";
