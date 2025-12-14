@@ -93,6 +93,16 @@ public:
         tail = nullptr;
     }
 
+    ~BoundedQueue() {
+        std::scoped_lock lock(headLock_,tailLock_);
+        while (head) {
+            Node* n = head;
+            head = head->next;
+            delete n;
+        }
+        tail = nullptr;
+    }
+
     void enqueue (T value){
         Node* newNode = new Node();
         newNode->value = value;
@@ -117,8 +127,8 @@ public:
             Node* temp = head;
             if (head->next == nullptr) tail = nullptr;
             head = head->next;
-            delete temp;
             LOG("Dequeue");
+            delete temp;
         }
         addable_.release();
         return returnValue;
