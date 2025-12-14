@@ -121,13 +121,23 @@ public:
             }
             head = head->next;
             delete temp;
+            LOG("Dequeue");
         }
         return returnValue;
     }
-    
+
     T peek () {
-        return NULL;
+        T returnValue;
+        removable_.acquire();
+        {
+            std::scoped_lock lock (headLock_);
+            returnValue = head->value;
+            LOG("Peek");
+        }
+        removable_.release();
+        return returnValue;
     }
+    
     bool try_dequeue (T& result) {
         return false;
     }
