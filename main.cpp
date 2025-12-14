@@ -88,7 +88,7 @@ private:
     std::mutex tailLock_;
 
 public:
-    BoundedQueue(int capacity) : addable_(capacity), removable_(0) {
+    BoundedQueue(int capacity) : addable_(capacity > 0 ? capacity: throw std::invalid_argument("capacity must be > 0")), removable_(0) {
         head = nullptr;
         tail = nullptr;
     }
