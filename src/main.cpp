@@ -10,7 +10,7 @@
 #include <iostream>
 
 int main() {
-    LOG_INIT("log.txt");
+    bcq::logging::init("log.txt");
 
     bcq::BoundedQueue<int> q(5);
     int r;
@@ -42,5 +42,5 @@ int main() {
     std::cout << "Expected: false (0) | " << q2.try_enqueue(3) << "\n"; //full
 
 
-    LOG_SHUTDOWN();
+    bcq::logging::shutdown();
 }
